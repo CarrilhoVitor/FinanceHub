@@ -1,0 +1,60 @@
+.contact-page {
+  display: flex;
+  justify-content: center;
+}
+
+.contact-card {
+  width: 100%;
+  max-width: 720px;
+  padding: 36px;
+  border-radius: 32px;
+  background: rgba(52, 52, 92, 0.96);
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  box-shadow: 0 28px 70px -45px rgba(0, 0, 0, 0.55);
+  animation: fadeInUp 0.7s ease both;
+}
+
+.contact-card h2 {
+  margin-top: 14px;
+  margin-bottom: 18px;
+  color: #f4f6ff;
+}
+
+.contact-card p {
+  color: rgba(247, 248, 251, 0.8);
+  line-height: 1.8;
+}
+
+.contact-grid {
+  display: grid;
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.contact-item {
+  padding: 24px;
+  border-radius: 24px;
+  background: rgba(42, 42, 78, 0.9);
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.contact-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.contact-item h3 {
+  margin: 0 0 10px 0;
+  color: #d8d8ff;
+}
+
+.contact-item a {
+  color: #b3b8ff;
+  transition: color 0.25s ease;
+}
+
+.contact-item a:hover {
+  color: #fff;
+  text-decoration: underline;
+}

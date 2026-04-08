@@ -1,0 +1,189 @@
+<section class="dashboard">
+  <header class="dashboard-header">
+    <div class="headline">
+      <span class="eyebrow">Painel financeiro</span>
+      <h2>Organize suas receitas e despesas com clareza</h2>
+      <p class="subtitle">Registre cada movimentação e acompanhe o saldo em tempo real com um gráfico intuitivo.</p>
+    </div>
+    <div class="balance-widget">
+      <span>Saldo disponível</span>
+      <strong>{{ balance() | currency:'BRL':'symbol':'1.0-0' }}</strong>
+    </div>
+  </header>
+
+  <div class="overview-grid">
+    <article class="status-card income-card">
+      <span>Receitas</span>
+      <strong>{{ totalIncome() | currency:'BRL':'symbol':'1.0-0' }}</strong>
+    </article>
+    <article class="status-card expense-card">
+      <span>Despesas</span>
+      <strong>{{ totalExpense() | currency:'BRL':'symbol':'1.0-0' }}</strong>
+    </article>
+    <article class="status-card balance-card">
+      <span>Saldo</span>
+      <strong>{{ balance() | currency:'BRL':'symbol':'1.0-0' }}</strong>
+    </article>
+  </div>
+
+  <div class="chart-and-form-container">
+    <div class="chart-panel">
+      <div class="chart-wrapper">
+        <div class="chart-header">
+          <div>
+            <span class="eyebrow">Visão por categoria</span>
+            <h3 style="color: white;">Distribuição</h3>
+          </div>
+          <div class="month-select-wrapper">
+            <label for="monthSelect">Período</label>
+            <select id="monthSelect" [ngModel]="selectedMonth()" (ngModelChange)="selectedMonth.set($event)" name="selectedMonth">
+              <option *ngFor="let month of monthOptions()" [value]="month.value">{{ month.label }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="chart-content">
+          <div class="pie-chart" [style.background]="monthChartBackground()"></div>
+          <div class="chart-legend">
+            <div>
+              <span class="dot income-dot"></span>
+              <div>
+                <p>Receitas</p>
+                <strong>{{ monthIncome() | currency:'BRL':'symbol':'1.0-0' }}</strong>
+              </div>
+            </div>
+            <div>
+              <span class="dot expense-dot"></span>
+              <div>
+                <p>Despesas</p>
+                <strong>{{ monthExpense() | currency:'BRL':'symbol':'1.0-0' }}</strong>
+              </div>
+            </div>
+          </div>
+          <div class="month-data">
+            <span><strong>Mês</strong><strong>{{ monthOptions().find(option => option.value === selectedMonth())?.label }}</strong></span>
+            <span><strong>Saldo do mês</strong><strong>{{ monthBalance() | currency:'BRL':'symbol':'1.0-0' }}</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="transaction-card card">
+      <div class="card-top">
+        <div>
+          <span class="eyebrow">Nova movimentação</span>
+          <h3 style="color: white;">Adicione receitas ou despesas</h3>
+        </div>
+        <button class="primary-button small-button" (click)="openModal()">Histórico</button>
+      </div>
+
+      <form (submit)="addTransaction(); $event.preventDefault()">
+        <div class="field-row">
+          <label class="field-label">Tipo</label>
+          <div class="type-toggle">
+            <button type="button" [class.active]="type === 'income'" (click)="type = 'income'">Receita</button>
+            <button type="button" [class.active]="type === 'expense'" (click)="type = 'expense'">Despesa</button>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label>Descrição</label>
+            <input type="text" [(ngModel)]="description" name="description" placeholder="Ex: Venda freelancer" />
+          </div>
+          <div class="field-group">
+            <label>Valor</label>
+            <input type="number" [(ngModel)]="amount" name="amount" placeholder="0.00" min="0" step="0.01" />
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group full-width">
+            <label>Categoria</label>
+            <select [(ngModel)]="category" name="category">
+              <option style="color: black;">Salário</option>
+              <option style="color: black;">Freelance</option>
+              <option style="color: black;">Alimentação</option>
+              <option style="color: black;">Transporte</option>
+              <option style="color: black;">Lazer</option>
+              <option style="color: black;">Saúde</option>
+              <option style="color: black;">Moradia</option>
+              <option style="color: black;">Educação</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="primary-button" type="submit">Salvar</button>
+      </form>
+    </section>
+  </div>
+
+  <article class="category-summary-card card">
+    <div class="card-top">
+      <div>
+        <span class="eyebrow">Resumo por categoria</span>
+        <h3 style="color: white;">Despesas essenciais</h3>
+      </div>
+      <div class="summary-total">
+        <span>Total gasto</span>
+        <strong>{{ totalExpense() | currency:'BRL':'symbol':'1.0-0' }}</strong>
+      </div>
+    </div>
+
+    <div class="category-table">
+      <div class="table-row table-head">
+        <span>Categoria</span>
+        <span>Valor</span>
+        <span>Percentual</span>
+      </div>
+      <div class="table-row" *ngFor="let item of categorySummary()">
+        <span>{{ item.category }}</span>
+        <strong>{{ item.amount | currency:'BRL':'symbol':'1.0-0' }}</strong>
+        <span>{{ (totalExpense() ? (item.amount / totalExpense() * 100) : 0) | number:'1.0-0' }}%</span>
+      </div>
+    </div>
+  </article>
+
+  <div class="page-footer">
+    <button type="button" class="danger-button" (click)="deleteMonthEntries()">
+      Apagar dados deste mês
+    </button>
+  </div>
+
+  <!-- Modal para histórico -->
+  <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Histórico de Transações</h3>
+        <button class="close-button" (click)="closeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <section class="transaction-card history-card card">
+          <div class="card-top">
+            <div>
+              <span class="eyebrow">Histórico</span>
+              <h3>Movimentações recentes</h3>
+            </div>
+          </div>
+
+          <div class="history-list">
+            <div *ngIf="!entries().length" class="empty-state">
+              Nenhuma movimentação registrada ainda. Comece adicionando suas receitas e despesas.
+            </div>
+
+            <article *ngFor="let entry of entries()" class="history-item">
+              <div>
+                <span class="item-category">{{ entry.category }}</span>
+                <p>{{ entry.description }}</p>
+                <small>{{ entry.date }} • {{ entry.type === 'income' ? 'Receita' : 'Despesa' }}</small>
+              </div>
+              <div class="history-actions">
+                <strong [class.expense]="entry.type === 'expense'">{{ entry.amount | currency:'BRL':'symbol':'1.0-0' }}</strong>
+                <button type="button" class="ghost-button" (click)="removeTransaction(entry.id)">Remover</button>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</section>
