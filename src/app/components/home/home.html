@@ -173,11 +173,11 @@
             <article *ngFor="let entry of entries()" class="history-item">
               <div>
                 <span class="item-category">{{ entry.category }}</span>
-                <p>{{ entry.description }}</p>
-                <small>{{ entry.date }} • {{ entry.type === 'income' ? 'Receita' : 'Despesa' }}</small>
+                <p style="color: white;">{{ entry.description }}</p>
+                <small style="color: white;">{{ entry.date }} • {{ entry.type === 'income' ? 'Receita' : 'Despesa' }}</small>
               </div>
               <div class="history-actions">
-                <strong [class.expense]="entry.type === 'expense'">{{ entry.amount | currency:'BRL':'symbol':'1.0-0' }}</strong>
+                <strong [class.expense]="entry.type === 'expense'" style="color: white;">{{ entry.amount | currency:'BRL':'symbol':'1.0-0' }}</strong>
                 <button type="button" class="ghost-button" (click)="removeTransaction(entry.id)">Remover</button>
               </div>
             </article>
